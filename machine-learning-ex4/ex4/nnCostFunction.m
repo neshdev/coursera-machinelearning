@@ -1,8 +1,11 @@
-function [J grad] = nnCostFunction(nn_params, ...
-                                   input_layer_size, ...
-                                   hidden_layer_size, ...
-                                   num_labels, ...
-                                   X, y, lambda)
+function [J grad] = nnCostFunction(nn_params, % ...= [10285 x 1]
+                                   input_layer_size, %... =400
+                                   hidden_layer_size, %... =25
+                                   num_labels, %... =10
+                                   X, % =[5000 x 400]
+								   y, % =[5000 x 1]
+								   lambda % =0
+								   )
 %NNCOSTFUNCTION Implements the neural network cost function for a two layer
 %neural network which performs classification
 %   [J grad] = NNCOSTFUNCTON(nn_params, hidden_layer_size, num_labels, ...
@@ -16,19 +19,17 @@ function [J grad] = nnCostFunction(nn_params, ...
 
 % Reshape nn_params back into the parameters Theta1 and Theta2, the weight matrices
 % for our 2 layer neural network
-Theta1 = reshape(nn_params(1:hidden_layer_size * (input_layer_size + 1)), ...
-                 hidden_layer_size, (input_layer_size + 1));
+Theta1 = reshape(nn_params(1:hidden_layer_size * (input_layer_size + 1)), hidden_layer_size, (input_layer_size + 1)); % =[25 x 401]
 
-Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):end), ...
-                 num_labels, (hidden_layer_size + 1));
+Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):end), num_labels, (hidden_layer_size + 1)); % =[10 x 26]
 
 % Setup some useful variables
-m = size(X, 1);
+m = size(X, 1); %m=5000
          
 % You need to return the following variables correctly 
 J = 0;
-Theta1_grad = zeros(size(Theta1));
-Theta2_grad = zeros(size(Theta2));
+Theta1_grad = zeros(size(Theta1));  % =[25 x 401]
+Theta2_grad = zeros(size(Theta2));  % =[10 x 26]
 
 % ====================== YOUR CODE HERE ======================
 % Instructions: You should complete the code by working through the
@@ -62,21 +63,52 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+J_mat = zeros(num_labels,1);
+
+a_1 = [ones(m,1) X];
+z_2 = [ones(m,1) X] * Theta1';
+a_2 = [ones(m,1) sigmoid(z_2)];
+z_3 = a_2 * Theta2';
+a_3 = sigmoid(z_3); %=[5000 x 10]
+h = a_3;
+
+for k = 1:num_labels
+	y_k = y == k;
+	J_1 = -y_k' * log(h(:,k));
+	J_2 = (1 - y_k)' * log(1 - h(:,k));
+	J = 1/m * (J_1 - J_2);
+	J_mat(k, 1) = J;
+endfor
+
+J_reg_theta1 = Theta1(:,2:end).^2;
+J_reg_theta2 = Theta2(:,2:end).^2;
+J_reg = lambda / (2*m) * ( sum(J_reg_theta1(:)) + sum(J_reg_theta2(:)) );
+
+J = sum(J_mat) + J_reg;
+
+Y = zeros(m, num_labels);
+
+for k = 1:num_labels
+	y_k = y==k;
+	Y(:,k) = y_k;
+endfor
+
+delta_3 = h - Y;
+delta_2 = (delta_3 * Theta2(:,2:end)) .* sigmoidGradient(z_2);
+
+Delta1 = delta_2' * a_1;
+Delta2 = delta_3' * a_2;
+
+Theta1_reg = Theta1;
+Theta2_reg = Theta2;
+Theta1_reg(:,1) = 0;
+Theta2_reg(:,1) = 0;
+Theta1_reg = (lambda/m) .* Theta1_reg;
+Theta2_reg = (lambda/m) .* Theta2_reg;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+Theta1_grad = 1/m * Delta1 + Theta1_reg;
+Theta2_grad = 1/m * Delta2 + Theta2_reg;
 
 
 

@@ -53,11 +53,32 @@ error_val   = zeros(m, 1);
 
 % ---------------------- Sample Solution ----------------------
 
+%X = [1 2; 1 3; 1 4; 1 5]
+%y = [7;6;5;4]
+%Xval = [1 7; 1 -2;]
+%yval = [2; 12]
+%lambda = 7
+%m = size(X, 1);
+% You need to return these values correctly
+%error_train = zeros(m, 1);
+%error_val   = zeros(m, 1);
 
 
 
+for i = 1:m
+	X_train = X(1:i,:);
+	y_train = y(1:i,:);
+	theta_train = trainLinearReg( X_train, y_train, lambda);
+	[J_train, grad_train] = linearRegCostFunction(X_train, y_train, theta_train, 0);
+	
+	X_crossval = Xval;
+	y_crossval = yval;
+	[J_crossval, grad_crossval] = linearRegCostFunction(X_crossval, y_crossval, theta_train, 0);
 
-
+	error_train(i) = J_train;
+	error_val(i) = J_crossval;
+	
+end
 
 % -------------------------------------------------------------
 

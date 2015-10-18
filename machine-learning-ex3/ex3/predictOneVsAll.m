@@ -30,10 +30,16 @@ X = [ones(m, 1) X];
 %       for each row.
 %       
 
+% 
+%for i =1:num_labels
+%	theta = all_theta(i,:)';
+%	p_1 = sigmoid(X*theta) >= 0.5;
+%	p(find(p_1 == 1)) = i; << not i, because of index 0
+%endfor
 
-
-
-
+predict = sigmoid(X*all_theta');
+[predict_max, index_max] = max(predict, [], 2);
+p = index_max;
 
 
 % =========================================================================

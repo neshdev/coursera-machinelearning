@@ -21,14 +21,13 @@ grad = zeros(size(theta));
 
 
 
+J_cost = ((X * theta) - y)' * ((X * theta) - y);
+J_reg =  lambda * theta(2:end, :)' * theta(2:end, :);
+J =  (J_cost + J_reg)/(2*m);
 
-
-
-
-
-
-
-
+grad_derivate = (1/ m) * X' * ((X * theta) - y);
+grad_reg = [0; lambda/m * theta(2:end,:)];
+grad = grad_derivate + grad_reg;
 
 % =========================================================================
 

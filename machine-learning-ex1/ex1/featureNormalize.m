@@ -26,9 +26,15 @@ sigma = zeros(1, size(X, 2));
 % Hint: You might find the 'mean' and 'std' functions useful.
 %       
 
+m = length(X)
 
+mu = mean(X);
+sigma = std(X);
 
+num  = ones(m,1) * mu ;
+den = ones(m,1) * sigma ;
 
+X_norm = (X - num) ./ den;
 
 
 
