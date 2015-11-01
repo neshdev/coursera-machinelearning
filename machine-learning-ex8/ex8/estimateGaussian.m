@@ -22,10 +22,12 @@ sigma2 = zeros(n, 1);
 %
 
 
+mu = 1 / m * X'* ones(m,1);
 
+muRows = ones(m,n) .* mu';
 
-
-
+sigma2 = 1 / m *  sum((X - muRows).^2);
+sigma2 = sigma2';
 
 
 
